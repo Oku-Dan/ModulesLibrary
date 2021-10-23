@@ -4,27 +4,48 @@
 
 static bool initialized = false;
 
+#include "Wire.h"
+
+extern TwoWire Wire1;
+
 static void I2cInitialize(){
-	if(!initialized){
-		initialized = true;
-	}
+  if(!initialized){
+    initialized = true;
+    Wire1.begin();
+  }
 }
 
 static void I2cWriteByte(uint8_t add, uint8_t reg, uint8_t data)
 {
+  Wire1.beginTransmission(add);
+  Wire1.write(reg);
+  Wire1.write(data);
+  Wire1.endTransmission();
 }
 
 static uint8_t I2cReadByte(uint8_t add, uint8_t reg)
 {
-	uint8_t data;
-	
-	return data;
+  uint8_t data;
+  Wire1.beginTransmission(add);
+  Wire1.write(reg);
+  Wire1.endTransmission();
+  Wire1.requestFrom(add,1);
+  data = Wire1.read();
+  return data;
 }
 
 static void I2cReadBytes(uint8_t add, uint8_t reg, uint8_t *data, uint8_t count)
 {
+  Wire1.beginTransmission(add);
+  Wire1.write(reg);
+  Wire1.endTransmission();
+  Wire1.requestFrom(add,count);
+  for(int i = 0;i < count;i++)data[i] = Wire1.read();
 }
 
+static void DelayMs(uint32_t t){
+  delay(t);
+}
 //------------------- Write Yourself To Here-------------
 
 static uint8_t MPU9250_ADDRESS;

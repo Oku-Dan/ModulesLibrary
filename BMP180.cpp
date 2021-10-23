@@ -1,31 +1,50 @@
 #include "BMP180.h"
 
-//------------------- Write Yourself From Here-------------
+//------------------- Write Yourself To Here-------------
 
 static bool initialized = false;
+
+#include "Wire.h"
+
+extern TwoWire Wire2;
 
 static void I2cInitialize(){
 	if(!initialized){
 		initialized = true;
+    Wire2.begin();
 	}
 }
 
 static void I2cWriteByte(uint8_t add, uint8_t reg, uint8_t data)
 {
+  Wire2.beginTransmission(add);
+  Wire2.write(reg);
+  Wire2.write(data);
+  Wire2.endTransmission();
 }
 
 static uint8_t I2cReadByte(uint8_t add, uint8_t reg)
 {
 	uint8_t data;
-	
+  Wire2.beginTransmission(add);
+  Wire2.write(reg);
+  Wire2.endTransmission();
+  Wire2.requestFrom(add,1);
+  data = Wire2.read();
 	return data;
 }
 
 static void I2cReadBytes(uint8_t add, uint8_t reg, uint8_t *data, uint8_t count)
 {
+  Wire2.beginTransmission(add);
+  Wire2.write(reg);
+  Wire2.endTransmission();
+  Wire2.requestFrom(add,count);
+  for(int i = 0;i < count;i++)data[i] = Wire2.read();
 }
 
 static void DelayMs(uint32_t t){
+  delay(t);
 }
 
 //------------------- Write Yourself To Here-------------

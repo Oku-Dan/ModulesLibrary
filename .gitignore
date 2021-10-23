@@ -1,4 +1,3 @@
-*.ino
 .vscode
 source.c
 *.exe
